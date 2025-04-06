@@ -20,3 +20,34 @@
 #define CYAN "\x1b[36m"
 
 // Declaración de estructuras -------------------------------------------------------------
+
+struct factura
+{
+    int numFactura;
+    char nombre[20];
+    char compra[20];
+    float totalFacturado;
+    struct factura *next;
+};
+typedef struct factura nodoFactura;
+
+struct cola
+{
+    int numCuenta;
+    char nombre[20];
+    float monedero;
+    struct cola *next;
+};
+typedef struct cola nodoCola;
+
+struct listaDoble
+{
+    char terminal[20];
+    int clientes;
+    float montoAcumulado;
+    struct listaDoble *back, *next;
+
+    nodoCola *first, *last;
+    nodoFactura *top;
+};
+typedef struct listaDoble nodoLD;
