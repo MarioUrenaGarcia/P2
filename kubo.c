@@ -29,24 +29,64 @@
 
 #include "defKubo.h"
 
+// Declaración de funciones --------------------------------------------------------------
+void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, float total);
+void imprimirListaD(nodoD *aux);
+int menuOpciones(nodoD *aux);
 // Main ---------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
 {
-    // argv[1] debe ser el archivo clientes.txt
-    // argv[2] debe ser el archivo negocio.txt
+    // argv[1] debe ser el archivo negocio.txt
+    // argv[2] debe ser el archivo clientes.txt
 
     // Inicio Personalizado-----------------------------------------------------------
-    printf("Presione ENTER para continuar\n");
+    printf("Presione " BG_GREEN "ENTER" RESET " para continuar\n");
     getchar();
     system("clear");
     printf("\n\n\tEste código fue creado por Mario Ureña García, Ricardo Ponce de León Vargas y Emiliano Cisneros Cervantes\n\n");
+    printf("\n\tBienvenido al sistema de gestión de colas del Kubo!" RESET "\n\n");
+    printf("\n\tPresione " BG_GREEN "ENTER" RESET " para continuar\n");
+    getchar();
     //-------------------------------------------------------------------------------------
     // Variables
+    nodoD *inicio, *fin;
+    FILE *fp;
+    int opcion;
+    // Variables para la lectura de datos de negocio.txt
+    char nombreCola[20];
+    int tickets;
+    float total;
 
-    // Procesos
+    // Procesos---------------------------------------------------------------------------
 
-    // FINALIZACIÓN DEL PROGRAMA
+    // Inicialización de la lista doble
+    inicio = NULL;
+    fin = NULL;
+
+    // Carga de datos desde el archivo de negocio
+    fp = fopen(argv[1], "r");
+    if (fp == NULL)
+    {
+        printf(RED "\n\n\tError al abrir el archivo de clientes\n\n" RESET);
+        return 1;
+    }
+
+    // Lectura de datos del archivo negocio.txt
+    while (fscanf(fp, "%s\t%d\t%f", nombreCola, &tickets, &total) == 3)
+    {
+        // Se inserta en la lista doble
+        insertarColaD(&inicio, &fin, nombreCola, tickets, total);
+    }
+    fclose(fp);
+
+    // Imprimir menú de opciones de impresión/atención
+    do
+    {
+        opcion = menuOpciones(inicio);
+    } while (opcion != 0); // La opción 0 es para salir del programa
+
+    // FINALIZACIÓN DEL PROGRAMA ---------------------------------------------------------
     printf("\n\n\tPrograma Finalizado con ÉXITO\n\n");
     return 0;
 }
