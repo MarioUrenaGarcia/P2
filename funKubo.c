@@ -1,5 +1,3 @@
-#include "defKubo.h"
-
 /**
  * @file kubo.c
  * @brief En este archivo se almacenan las funciones de kubo.c
@@ -8,6 +6,9 @@
  */
 
 // Funciones ----------------------------------------------------------------------------
+
+#include "defKubo.h"
+
 
 /**
  * @brief
@@ -68,6 +69,14 @@ int menuOpciones(nodoD *aux)
     return opcion;
 }
 
+/**
+ * @brief
+ * @date
+ * @author
+ * @param
+ * @return
+ * @Ejemplo
+ */
 void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, float total)
 {
     nodoD *nuevo;
@@ -106,6 +115,14 @@ void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, 
     return;
 }
 
+/**
+ * @brief
+ * @date
+ * @author
+ * @param
+ * @return
+ * @Ejemplo
+ */
 void imprimirListaD(nodoD *aux)
 {
     printf(YELLOW "\nImpresión de la lista Doble\n" RESET);
