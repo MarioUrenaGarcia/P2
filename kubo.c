@@ -32,7 +32,11 @@
 // Declaración de funciones --------------------------------------------------------------
 void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, float total);
 void imprimirListaD(nodoD *aux);
-int menuOpciones(nodoD *aux);
+int menuOpciones(nodoD *aux, nodoD **seleccion);
+void imprimirTerminal(nodoD *aux);
+void atenderTerminal(nodoD **terminal);
+void presioneEnter();
+
 // Main ---------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
@@ -40,23 +44,25 @@ int main(int argc, char *argv[])
     // argv[1] debe ser el archivo negocio.txt
     // argv[2] debe ser el archivo clientes.txt
 
-    // Inicio Personalizado-----------------------------------------------------------
-    printf("Presione " BG_GREEN "ENTER" RESET " para continuar\n");
-    getchar();
-    system("clear");
-    printf("\n\n\tEste código fue creado por Mario Ureña García, Ricardo Ponce de León Vargas y Emiliano Cisneros Cervantes\n\n");
-    printf("\n\tBienvenido al sistema de gestión de colas del Kubo!" RESET "\n\n");
-    printf("\n\tPresione " BG_GREEN "ENTER" RESET " para continuar\n");
-    getchar();
-    //-------------------------------------------------------------------------------------
-    // Variables
+    // Variables ------------------------------------------------------------------------
     nodoD *inicio, *fin;
+
+    // Variable auxiliar para selección dinámica de atención, es decir, la caja que se atenderá o imprimirá
+    nodoD *seleccion;
+
     FILE *fp;
     int opcion;
+
     // Variables para la lectura de datos de negocio.txt
     char nombreCola[20];
     int tickets;
     float total;
+
+    // Inicio Personalizado-----------------------------------------------------------
+    printf("\n\n\tEste código fue creado por Mario Ureña García, Ricardo Ponce de León Vargas y Emiliano Cisneros Cervantes\n\n");
+    printf("\n\tBienvenido al sistema de gestión de colas del Kubo!" RESET "\n\n");
+    presioneEnter();
+    //-------------------------------------------------------------------------------------
 
     // Procesos---------------------------------------------------------------------------
 
@@ -73,17 +79,53 @@ int main(int argc, char *argv[])
     }
 
     // Lectura de datos del archivo negocio.txt
+    printf(YELLOW "\n\nCargando datos de negocio.txt...\n\n" RESET);
     while (fscanf(fp, "%s\t%d\t%f", nombreCola, &tickets, &total) == 3)
     {
         // Se inserta en la lista doble
+        printf(CYAN "Creando nodo de %s\n" RESET, nombreCola);
         insertarColaD(&inicio, &fin, nombreCola, tickets, total);
+        printf(GREEN "Nodo de %s creado con éxito\n" RESET, nombreCola);
     }
+    presioneEnter();
     fclose(fp);
+
+    imprimirListaD(inicio); // Imprimir lista doble para verificar que se cargaron los datos correctamente
+    presioneEnter();
 
     // Imprimir menú de opciones de impresión/atención
     do
     {
-        opcion = menuOpciones(inicio);
+        opcion = menuOpciones(inicio, &seleccion);
+        getchar(); // Limpiar el buffer de entrada
+
+        // Si la opción es 1, se imprimen todas las colas
+        if (opcion == 1)
+        {
+            system("clear");
+            printf("\n\n\tImprimiendo estado de todas las colas\n\n");
+            imprimirListaD(inicio);
+            presioneEnter();
+        }
+        // Si la opción es par y diferente de 0 y diferente de 1, se imprimirá la cola de la opción seleccionada
+        if (opcion % 2 == 0 && opcion != 0 && opcion != 1)
+        {
+            system("clear");
+            // Se imprime la cola de la opción seleccionada
+            printf("\n\n\tImprimiendo cola de %s\n\n", seleccion->terminal);
+            imprimirTerminal(seleccion);
+            presioneEnter();
+        }
+        // Si la opción es impar y diferente de 0 y diferente de 1, se atenderá la cola de la opción seleccionada
+        else if (opcion % 2 != 0 && opcion != 0 && opcion != 1)
+        {
+            system("clear");
+            // Se atiende la cola de la opción seleccionada
+            printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
+            atenderTerminal(&seleccion);
+            presioneEnter();
+        }
+
     } while (opcion != 0); // La opción 0 es para salir del programa
 
     // FINALIZACIÓN DEL PROGRAMA ---------------------------------------------------------

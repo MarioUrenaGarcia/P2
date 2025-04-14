@@ -17,7 +17,14 @@
  * @return
  * @Ejemplo
  */
-int menuOpciones(nodoD *aux)
+
+/**
+ * @brief Función que imprime el menú de opciones y devuelve la opción seleccionada por el usuario.
+ * @param aux Puntero a la lista doble que contiene los puestos de comida.
+ * @param seleccion Puntero a la lista doble que contiene el puesto que se va a atender.
+ * @return Opción seleccionada por el usuario.
+ */
+extern int menuOpciones(nodoD *aux, nodoD **seleccion)
 {
     int opcion, i, validez = 2;
     nodoD *first = aux;
@@ -33,8 +40,6 @@ int menuOpciones(nodoD *aux)
 
         i = 2;
 
-        system("clear");
-
         if (validez == 1)
         {
             printf(RED "\nOpción inválida. Intente de nuevo.\n" RESET);
@@ -44,13 +49,13 @@ int menuOpciones(nodoD *aux)
         {
             printf(CYAN "%d." RESET " Imprimir cola de %s\n", i, aux->terminal);
             i++;
-            printf(YELLOW "%d." RESET " Atender cola de %s\n", i + 1, aux->terminal);
+            printf(YELLOW "%d." RESET " Atender cola de %s\n", i, aux->terminal);
             aux = aux->next;
             i++;
         }
         printf(BG_WHITE BLACK "0. Salir\n" RESET);
         printf("\nElija una opción: ");
-        scanf("%d", &opcion);
+        scanf(" %d", &opcion);
 
         // Validación de la opción
         if (opcion < 0 || opcion > i) // Opción inválida
@@ -65,10 +70,13 @@ int menuOpciones(nodoD *aux)
 
     } while (validez == 1);
 
+    // De retorno extra, se asigna el nodoD seleccionado a la variable seleccion para su uso en main
+    seleccion = &aux;
+
     return opcion;
 }
 
-void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, float total)
+extern void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, float total)
 {
     nodoD *nuevo;
 
@@ -106,7 +114,7 @@ void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, 
     return;
 }
 
-void imprimirListaD(nodoD *aux)
+extern void imprimirListaD(nodoD *aux)
 {
     printf(YELLOW "\nImpresión de la lista Doble\n" RESET);
 
@@ -127,4 +135,21 @@ void imprimirListaD(nodoD *aux)
     }
 
     return;
+}
+
+extern void imprimirTerminal(nodoD *aux)
+{
+    return;
+}
+
+extern void atenderTerminal(nodoD **terminal)
+{
+    return;
+}
+
+extern void presioneEnter()
+{
+    printf("\nPresione " BG_GREEN "ENTER" RESET " para continuar\n");
+    getchar();
+    system("clear");
 }
