@@ -1,4 +1,4 @@
- /**
+/**
  *
  * @file kubo.c
  * @brief En una universidad muy famosa existe la cafetería El Kubo. Cuenta con servicio
@@ -39,6 +39,9 @@ void presioneEnter();
 void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero);
 void actualizarTerminales(nodoD **first);
 void existenTerminalesFundamentales(nodoD *aux);
+void imprimirFacturas(nodoD *aux);
+void atenderFacturas(nodoD **terminal);
+void atenderCaja(nodoD **terminal);
 // Main ---------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
@@ -148,7 +151,17 @@ int main(int argc, char *argv[])
             system("clear");
             // Se imprime la cola de la opción seleccionada
             printf("\n\n\tImprimiendo cola de %s\n\n", seleccion->terminal);
-            imprimirTerminal(seleccion);
+
+            // Si la terminal es Facturacion, se imprime la pila de facturas de forma diferente
+            if (strcmp(seleccion->terminal, "Facturacion") == 0)
+            {
+                printf("\n\n\tImprimiendo pila de facturas\n\n");
+                imprimirFacturas(seleccion);
+            }
+            else
+            {
+                imprimirTerminal(seleccion);
+            }
             presioneEnter();
         }
         // Si la opción es impar y diferente de 0 y diferente de 1, se atenderá la cola de la opción seleccionada
@@ -157,6 +170,24 @@ int main(int argc, char *argv[])
             system("clear");
             // Se atiende la cola de la opción seleccionada
             printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
+
+            // Si la terminal es cajas, se atiende la cola de la caja de forma diferente
+            if (strcmp(seleccion->terminal, "Caja") == 0)
+            {
+                printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
+                atenderCaja(&seleccion);
+            }
+            // Si la terminal es Facturacion, se atiende la cola de facturas de forma diferente
+            else if (strcmp(seleccion->terminal, "Facturacion") == 0)
+            {
+                printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
+                atenderFacturas(&seleccion);
+            }
+            else
+            {
+                atenderTerminal(&seleccion);
+            }
+
             atenderTerminal(&seleccion);
             presioneEnter();
         }

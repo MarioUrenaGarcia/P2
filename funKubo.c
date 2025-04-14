@@ -248,7 +248,22 @@ extern void imprimirTerminal(nodoD *aux)
     return;
 }
 
+extern void imprimirFacturas(nodoD *aux)
+{
+    return;
+}
+
 extern void atenderTerminal(nodoD **terminal)
+{
+    return;
+}
+
+extern void atenderCaja(nodoD **terminal)
+{
+    return;
+}
+
+extern void atenderFacturas(nodoD **terminal)
 {
     return;
 }
@@ -313,4 +328,6 @@ extern void presioneEnter()
     printf("\nPresione " BG_GREEN "ENTER" RESET " para continuar\n");
     getchar();
     system("clear");
+
+    return;
 }
