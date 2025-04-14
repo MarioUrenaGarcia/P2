@@ -30,6 +30,7 @@ int sumarClientes(nodoCola *aux)
 
     return total;
 }
+
 int sumarMonederos(nodoCola *aux)
 {
     float total = 0;
@@ -75,8 +76,8 @@ extern int menuOpciones(nodoD *aux, nodoD **seleccion)
             printf(CYAN "%d." RESET " Imprimir cola de %s\n", i, aux->terminal);
             i++;
             printf(YELLOW "%d." RESET " Atender cola de %s\n", i, aux->terminal);
-            aux = aux->next;
             i++;
+            aux = aux->next;
         }
         printf(BG_WHITE BLACK "0. Salir\n" RESET);
         printf("\nElija una opción: ");
@@ -218,6 +219,32 @@ extern void imprimirListaD(nodoD *aux)
 
 extern void imprimirTerminal(nodoD *aux)
 {
+    nodoCola *auxFIFO;
+
+    auxFIFO = aux->primero;
+
+    printf(YELLOW "Estado de la cola de %s\n" RESET, aux->terminal);
+    printf(GREEN "Número de clientes: %d\n" RESET, aux->clientes);
+    printf(GREEN "Monto acumulado: $%.2f\n\n" RESET, aux->montoAcumulado);
+
+    if (auxFIFO == NULL)
+    {
+        printf(GREEN "La cola está vacía\n" RESET);
+        return;
+    }
+    else
+    {
+        printf(YELLOW "Clientes en la cola:\n" RESET);
+        while (auxFIFO != NULL)
+        {
+            printf(BG_YELLOW BLACK "%d %s %.2f" RESET " -> ", auxFIFO->numCuenta, auxFIFO->nombre, auxFIFO->monedero);
+            auxFIFO = auxFIFO->next;
+        }
+        printf(BG_GREEN "Fin de la cola\n" RESET);
+    }
+
+    printf("\n");
+
     return;
 }
 
