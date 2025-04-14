@@ -18,6 +18,31 @@
  * @Ejemplo
  */
 
+int sumarClientes(nodoCola *aux)
+{
+    int total = 0;
+
+    while (aux != NULL)
+    {
+        total++;
+        aux = aux->next;
+    }
+
+    return total;
+}
+int sumarMonederos(nodoCola *aux)
+{
+    float total = 0;
+
+    while (aux != NULL)
+    {
+        total += aux->monedero;
+        aux = aux->next;
+    }
+
+    return total;
+}
+
 /**
  * @brief Función que imprime el menú de opciones y devuelve la opción seleccionada por el usuario.
  * @param aux Puntero a la lista doble que contiene los puestos de comida.
@@ -71,7 +96,15 @@ extern int menuOpciones(nodoD *aux, nodoD **seleccion)
     } while (validez == 1);
 
     // De retorno extra, se asigna el nodoD seleccionado a la variable seleccion para su uso en main
-    seleccion = &aux;
+    // Para eso, necesitamos que aux tome el valor del nodo que se va a atender
+
+    aux = first;
+
+    for (i = 1; i < opcion; i = i + 2)
+    {
+        *seleccion = aux;
+        aux = aux->next;
+    }
 
     return opcion;
 }
@@ -114,9 +147,55 @@ extern void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int ti
     return;
 }
 
+extern void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero)
+{
+    nodoCola *nuevo;
+    nodoD *aux;
+
+    // Puede que la caja no esté en la primera posición del archivo negocios.txt
+    // Por lo que se debe buscar en toda la lista doble y almacenarla en una variable caja
+    nodoD **caja = NULL;
+
+    // Buscar la cola con nombre Caja
+    aux = *first;
+    while (aux != NULL)
+    {
+        if (strcmp(aux->terminal, "Caja") == 0)
+        {
+            caja = &aux;
+            break;
+        }
+        aux = aux->next;
+    }
+
+    nuevo = (nodoCola *)malloc(sizeof(nodoCola));
+    if (nuevo == NULL)
+    {
+        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
+        exit(1);
+    }
+    nuevo->numCuenta = numCuenta;
+    strcpy(nuevo->nombre, nombreCliente);
+    nuevo->monedero = monedero;
+    nuevo->next = NULL;
+
+    // Caso: Cola vacía
+    if (((*caja)->primero == NULL) && ((*caja)->ultimo == NULL))
+    {
+        (*caja)->primero = nuevo;
+        (*caja)->ultimo = nuevo;
+    }
+    else // Caso: Cola no vacía
+    {
+        (*caja)->ultimo->next = nuevo;
+        (*caja)->ultimo = nuevo;
+    }
+    return;
+}
+
 extern void imprimirListaD(nodoD *aux)
 {
-    printf(YELLOW "\nImpresión de la lista Doble\n" RESET);
+    printf(YELLOW "\nEstado de Cajas\n" RESET);
 
     if (aux == NULL)
     {
@@ -129,7 +208,7 @@ extern void imprimirListaD(nodoD *aux)
         {
             printf(YELLOW "\nNombre de la cola:" RESET " %s\n", aux->terminal);
             printf(GREEN "Número de clientes:" RESET " %d\n", aux->clientes);
-            printf(GREEN "Monto acumulado:" RESET " %.2f\n", aux->montoAcumulado);
+            printf(GREEN "Monto acumulado:" RESET " $%.2f\n", aux->montoAcumulado);
             aux = aux->next;
         }
     }
@@ -144,6 +223,61 @@ extern void imprimirTerminal(nodoD *aux)
 
 extern void atenderTerminal(nodoD **terminal)
 {
+    return;
+}
+
+extern void actualizarTerminales(nodoD **first)
+{
+    // aux debe de modificar los valores de las estructuras del main
+    nodoD *aux;
+
+    aux = *first;
+
+    while (aux != NULL)
+    {
+        // Si es factura, actua diferente al resto de terminales
+        if (strcmp(aux->terminal, "Facturacion") == 0)
+        {
+        }
+        else
+        {
+            // Se actualiza el monto acumulado de la terminal, sumando los monederos de la lista FIFO
+            aux->montoAcumulado = sumarMonederos(aux->primero);
+            // Se actualiza el número de clientes atendidos
+            aux->clientes = sumarClientes(aux->primero);
+        }
+        aux = aux->next;
+    }
+
+    return;
+}
+
+extern void existenTerminalesFundamentales(nodoD *aux)
+{
+    // Debe de existir la terminal Caja y la terminal Facturacion
+    int caja = 0, facturacion = 0;
+    while (aux != NULL)
+    {
+        if (strcmp(aux->terminal, "Caja") == 0)
+        {
+            caja = 1;
+        }
+        if (strcmp(aux->terminal, "Facturacion") == 0)
+        {
+            facturacion = 1;
+        }
+        aux = aux->next;
+    }
+    if (caja == 0)
+    {
+        printf(RED "\n\n\tError: No existe la terminal Caja\n\n" RESET);
+        exit(1);
+    }
+    if (facturacion == 0)
+    {
+        printf(RED "\n\n\tError: No existe la terminal Facturacion\n\n" RESET);
+        exit(1);
+    }
     return;
 }
 

@@ -36,7 +36,9 @@ int menuOpciones(nodoD *aux, nodoD **seleccion);
 void imprimirTerminal(nodoD *aux);
 void atenderTerminal(nodoD **terminal);
 void presioneEnter();
-
+void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero);
+void actualizarTerminales(nodoD **first);
+void existenTerminalesFundamentales(nodoD *aux);
 // Main ---------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
@@ -57,6 +59,11 @@ int main(int argc, char *argv[])
     char nombreCola[20];
     int tickets;
     float total;
+
+    // Variables para la lectura de datos de clientes.txt
+    int numCuenta;
+    char nombreCliente[20];
+    float monedero;
 
     // Inicio Personalizado-----------------------------------------------------------
     printf("\n\n\tEste código fue creado por Mario Ureña García, Ricardo Ponce de León Vargas y Emiliano Cisneros Cervantes\n\n");
@@ -79,7 +86,7 @@ int main(int argc, char *argv[])
     }
 
     // Lectura de datos del archivo negocio.txt
-    printf(YELLOW "\n\nCargando datos de negocio.txt...\n\n" RESET);
+    printf(YELLOW "Cargando datos de negocio.txt...\n\n" RESET);
     while (fscanf(fp, "%s\t%d\t%f", nombreCola, &tickets, &total) == 3)
     {
         // Se inserta en la lista doble
@@ -87,15 +94,43 @@ int main(int argc, char *argv[])
         insertarColaD(&inicio, &fin, nombreCola, tickets, total);
         printf(GREEN "Nodo de %s creado con éxito\n" RESET, nombreCola);
     }
-    presioneEnter();
     fclose(fp);
+    presioneEnter();
 
+    printf(GREEN "Lista doble creada con éxito\n" RESET);
     imprimirListaD(inicio); // Imprimir lista doble para verificar que se cargaron los datos correctamente
+    presioneEnter();
+
+    // Verificar que existan las terminales fundamentales
+    printf(YELLOW "Verificando que existan las terminales fundamentales\n\n" RESET);
+    existenTerminalesFundamentales(inicio);
+    printf(GREEN "Terminales fundamentales verificadas con éxito\n" RESET);
+    presioneEnter();
+
+    // Carga de datos desde el archivo de clientes a la terminal de la caja
+    fp = fopen(argv[2], "r");
+    if (fp == NULL)
+    {
+        printf(RED "\n\n\tError al abrir el archivo de clientes\n\n" RESET);
+        return 1;
+    }
+    // Lectura de datos del archivo clientes.txt
+    printf(YELLOW "Cargando datos de clientes.txt...\n\n" RESET);
+    while (fscanf(fp, "%d\t%s\t%f", &numCuenta, nombreCliente, &monedero) == 3)
+    {
+        printf(CYAN "Insertando cliente %s con cuenta %d y monedero %.2f\n" RESET, nombreCliente, numCuenta, monedero);
+        insertarCaja(&inicio, numCuenta, nombreCliente, monedero);
+        printf(GREEN "Cliente %s insertado con éxito\n" RESET, nombreCliente);
+    }
+    printf(GREEN "\n\nClientes cargados con éxito\n" RESET);
+    fclose(fp);
     presioneEnter();
 
     // Imprimir menú de opciones de impresión/atención
     do
     {
+        actualizarTerminales(&inicio); // Actualizar el estado de las colas
+
         opcion = menuOpciones(inicio, &seleccion);
         getchar(); // Limpiar el buffer de entrada
 
