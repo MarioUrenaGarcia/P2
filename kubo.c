@@ -41,7 +41,7 @@ void actualizarTerminales(nodoD **first);
 void existenTerminalesFundamentales(nodoD *aux);
 void imprimirFacturas(nodoD *aux);
 void atenderFacturas(nodoD **terminal);
-void atenderCaja(nodoD **terminal);
+void atenderCaja(nodoD **caja);
 // Main ---------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
@@ -176,6 +176,7 @@ int main(int argc, char *argv[])
             {
                 printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
                 atenderCaja(&seleccion);
+                getchar(); // Limpiar el buffer de entrada
             }
             // Si la terminal es Facturacion, se atiende la cola de facturas de forma diferente
             else if (strcmp(seleccion->terminal, "Facturacion") == 0)
@@ -186,9 +187,8 @@ int main(int argc, char *argv[])
             else
             {
                 atenderTerminal(&seleccion);
+                printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
             }
-
-            atenderTerminal(&seleccion);
             presioneEnter();
         }
 

@@ -8,7 +8,7 @@
  */
 
 // Funciones ----------------------------------------------------------------------------
-
+extern void imprimirTerminal(nodoD *aux);
 /**
  * @brief
  * @date
@@ -42,6 +42,44 @@ int sumarMonederos(nodoCola *aux)
     }
 
     return total;
+}
+
+void enviarClienteComida(nodoD **terminal, nodoCola *cliente)
+{
+    return;
+}
+
+void borrarCliente(nodoD **terminal)
+{
+    nodoCola *borra;
+
+    // Si la cola está vacía, no se hace nada
+    if (((*terminal)->primero == NULL) && ((*terminal)->ultimo == NULL))
+    {
+        printf(RED "\nLa cola %s está vacía\n" RESET, (*terminal)->terminal);
+    }
+    else // Si la cola no está vacía
+    {
+        borra = (*terminal)->primero;
+
+        if ((*terminal)->primero == (*terminal)->ultimo) // Caso: un solo nodo
+        {
+            (*terminal)->primero = NULL;
+            (*terminal)->ultimo = NULL;
+            free(borra);
+        }
+        else // Más de un nodo
+        {
+            (*terminal)->primero = (*terminal)->primero->next;
+            (*terminal)->ultimo->next = (*terminal)->primero;
+            free(borra);
+        }
+
+        printf(GREEN "\nCliente eliminado de la caja\n" RESET);
+        printf("\nPrimero %s", (*terminal)->primero->nombre);
+        printf("\nUltimo %s", (*terminal)->ultimo->nombre);
+    }
+    return;
 }
 
 /**
@@ -258,8 +296,122 @@ extern void atenderTerminal(nodoD **terminal)
     return;
 }
 
-extern void atenderCaja(nodoD **terminal)
+extern void atenderCaja(nodoD **caja)
 {
+    int cantidad, compraValida = 0;
+    float pagar;
+    nodoD *colaActual;
+    nodoCola *clienteActual;
+    // Verificar que la cola no esté vacía
+    if (((*caja)->primero == NULL) && ((*caja)->ultimo == NULL))
+    {
+        printf(GREEN "\nLa caja está vacía\n" RESET);
+    }
+    else
+    {
+        colaActual = *caja;
+        clienteActual = (*caja)->primero;
+        // Atender a la caja eliminara al ultimo cliente de la cola FIFO y se copiaran sus datos a la terminal donde haya comprado
+        printf("Atendiendo a %s " GREEN "$%.2f" RESET, clienteActual->nombre, clienteActual->monedero);
+
+        // Bucle para preguntar si el cliente quiere comprar algo, si no quiere, se elimina de la cola.
+        // Se irá preguntando producto por producto (Nombre de terminal) y tiene que ingresar la cantidad que quiere comprar
+        // Solamente puede comprar un producto por vez.
+        do
+        {
+
+            // Si la terminal no es Caja, ni Facturacion, se hace todo
+            if ((strcmp(colaActual->terminal, "Caja") != 0) && (strcmp(colaActual->terminal, "Facturacion") != 0))
+            {
+                if (strcmp(colaActual->terminal, "Tacos") == 0)
+                {
+                    printf("\n%s ($25) cantidad:  ", colaActual->terminal);
+                }
+                else if (strcmp(colaActual->terminal, "Pizzas") == 0)
+                {
+                    printf("\n%s ($89) cantidad:  ", colaActual->terminal);
+                }
+                else
+                {
+                    printf("\n%s ($0) cantidad:  ", colaActual->terminal);
+                }
+                scanf(" %d", &cantidad);
+
+                printf("Comprar %d %s\n", cantidad, colaActual->terminal);
+                // Si el cliente quiso comprar algo
+                if (cantidad > 0)
+                {
+                    // Validar que el monedero sea suficiente
+                    // Los tacos cuestan 25, las pizzas 89 y cualquier otro producto cuesta 0
+                    if (strcmp(colaActual->terminal, "Tacos") == 0)
+                    {
+                        pagar = cantidad * 25;
+
+                        if (pagar <= clienteActual->monedero)
+                        {
+                            clienteActual->monedero -= pagar;
+                            printf(GREEN "\nCompra exitosa\n" RESET);
+                            compraValida = 1;
+                        }
+                        else
+                        {
+                            printf(RED "\nNo tiene suficiente dinero\n" RESET);
+                            compraValida = -1;
+                        }
+                    }
+                    else if (strcmp(colaActual->terminal, "Pizzas") == 0)
+                    {
+                        pagar = cantidad * 89;
+                        if (pagar <= clienteActual->monedero)
+                        {
+                            clienteActual->monedero -= pagar;
+                            printf(GREEN "\nCompra exitosa\n" RESET);
+                            compraValida = 1;
+                        }
+                        else
+                        {
+                            printf(RED "\nNo tiene suficiente dinero\n" RESET);
+                            compraValida = -1;
+                        }
+                    }
+                    else
+                    {
+                        pagar = 0;
+                        if (pagar <= clienteActual->monedero)
+                        {
+                            clienteActual->monedero -= pagar;
+                            printf(GREEN "\nCompra exitosa\n" RESET);
+                            compraValida = 1;
+                        }
+                        else
+                        {
+                            printf(RED "\nNo tiene suficiente dinero\n" RESET);
+                            compraValida = -1;
+                        }
+                    }
+
+                    // Si la compraValida == 1, se elimina el cliente de la cola y se enviará a la colaActual
+                    // Si la compraValida == -1, solamente se eliminará al cliente de la coa
+                    if (compraValida == 1)
+                    {
+                        enviarClienteComida(&colaActual, clienteActual);
+                    }
+                    borrarCliente(caja);
+                    borrarCliente(caja);
+                }
+                else
+                {
+                    colaActual = colaActual->next;
+                }
+            }
+            else
+            {
+                colaActual = colaActual->next;
+            }
+
+        } while (compraValida == 0 && colaActual != NULL);
+    }
+
     return;
 }
 
