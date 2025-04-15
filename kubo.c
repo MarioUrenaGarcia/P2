@@ -37,7 +37,6 @@ void imprimirTerminal(nodoD *aux);
 void atenderTerminal(nodoD **terminal);
 void presioneEnter();
 void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero);
-void actualizarTerminales(nodoD **first);
 void existenTerminalesFundamentales(nodoD *aux);
 void imprimirFacturas(nodoD *aux);
 void atenderFacturas(nodoD **terminal);
@@ -133,7 +132,6 @@ int main(int argc, char *argv[])
     // Imprimir menú de opciones de impresión/atención
     do
     {
-        actualizarTerminales(&inicio); // Actualizar el estado de las colas
 
         opcion = menuOpciones(inicio, &seleccion);
         getchar(); // Limpiar el buffer de entrada

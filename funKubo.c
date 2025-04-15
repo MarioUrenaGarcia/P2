@@ -18,32 +18,6 @@ extern void imprimirTerminal(nodoD *aux);
  * @Ejemplo
  */
 
-int sumarClientes(nodoCola *aux)
-{
-    int total = 0;
-
-    while (aux != NULL)
-    {
-        total++;
-        aux = aux->next;
-    }
-
-    return total;
-}
-
-int sumarMonederos(nodoCola *aux)
-{
-    float total = 0;
-
-    while (aux != NULL)
-    {
-        total += aux->monedero;
-        aux = aux->next;
-    }
-
-    return total;
-}
-
 extern void borrarCliente(nodoD **terminal)
 {
     nodoCola *borra;
@@ -101,7 +75,9 @@ void insertarClienteComida(nodoD **terminal, nodoCola *cliente)
         (*terminal)->ultimo->next = nuevo;
         (*terminal)->ultimo = nuevo;
     }
-
+    // Actualizar el número de clientes y el monto acumulado
+    (*terminal)->clientes++;
+    (*terminal)->montoAcumulado += nuevo->monedero;
     return;
 }
 
@@ -252,6 +228,11 @@ extern void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], flo
         (*caja)->ultimo->next = nuevo;
         (*caja)->ultimo = nuevo;
     }
+
+    // Actualizar el número de clientes y el monto acumulado
+    (*caja)->clientes++;
+    (*caja)->montoAcumulado += nuevo->monedero;
+
     return;
 }
 
@@ -414,11 +395,14 @@ extern void atenderCaja(nodoD **caja)
                     }
 
                     // Si la compraValida == 1, se elimina el cliente de la cola y se enviará a la colaActual
-                    // Si la compraValida == -1, solamente se eliminará al cliente de la coa
+                    // Si la compraValida == -1, solamente se eliminará al cliente de la cola
                     if (compraValida == 1)
                     {
                         insertarClienteComida(&colaActual, clienteActual);
                     }
+                    // Actualizar valores de terminal
+                    (*caja)->clientes--;
+                    (*caja)->montoAcumulado -= clienteActual->monedero;
                 }
                 else
                 {
@@ -438,32 +422,6 @@ extern void atenderCaja(nodoD **caja)
 
 extern void atenderFacturas(nodoD **terminal)
 {
-    return;
-}
-
-extern void actualizarTerminales(nodoD **first)
-{
-    // aux debe de modificar los valores de las estructuras del main
-    nodoD *aux;
-
-    aux = *first;
-
-    while (aux != NULL)
-    {
-        // Si es factura, actua diferente al resto de terminales
-        if (strcmp(aux->terminal, "Facturacion") == 0)
-        {
-        }
-        else
-        {
-            // Se actualiza el monto acumulado de la terminal, sumando los monederos de la lista FIFO
-            aux->montoAcumulado = sumarMonederos(aux->primero);
-            // Se actualiza el número de clientes atendidos
-            aux->clientes = sumarClientes(aux->primero);
-        }
-        aux = aux->next;
-    }
-
     return;
 }
 
