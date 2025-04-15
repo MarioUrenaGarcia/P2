@@ -44,41 +44,64 @@ int sumarMonederos(nodoCola *aux)
     return total;
 }
 
-void enviarClienteComida(nodoD **terminal, nodoCola *cliente)
-{
-    return;
-}
-
-void borrarCliente(nodoD **terminal)
+extern void borrarCliente(nodoD **terminal)
 {
     nodoCola *borra;
 
-    // Si la cola está vacía, no se hace nada
-    if (((*terminal)->primero == NULL) && ((*terminal)->ultimo == NULL))
+    // Verificar si la cola está vacía
+    if ((*terminal)->primero == NULL && (*terminal)->ultimo == NULL)
     {
         printf(RED "\nLa cola %s está vacía\n" RESET, (*terminal)->terminal);
     }
-    else // Si la cola no está vacía
+    else
     {
         borra = (*terminal)->primero;
 
-        if ((*terminal)->primero == (*terminal)->ultimo) // Caso: un solo nodo
+        // Caso: Un solo cliente en la cola
+        if ((*terminal)->primero == (*terminal)->ultimo)
         {
             (*terminal)->primero = NULL;
             (*terminal)->ultimo = NULL;
-            free(borra);
         }
-        else // Más de un nodo
+        else // Caso: Más de un cliente en la cola
         {
             (*terminal)->primero = (*terminal)->primero->next;
-            (*terminal)->ultimo->next = (*terminal)->primero;
-            free(borra);
+            (*terminal)->ultimo->next = (*terminal)->primero; // Mantener la circularidad
         }
 
-        printf(GREEN "\nCliente eliminado de la caja\n" RESET);
-        printf("\nPrimero %s", (*terminal)->primero->nombre);
-        printf("\nUltimo %s", (*terminal)->ultimo->nombre);
+        free(borra); // Liberar la memoria del cliente eliminado
+        printf(GREEN "\nCliente eliminado de la cola %s\n" RESET, (*terminal)->terminal);
     }
+    return;
+}
+
+void insertarClienteComida(nodoD **terminal, nodoCola *cliente)
+{
+    nodoCola *nuevo;
+
+    nuevo = (nodoCola *)malloc(sizeof(nodoCola));
+    if (nuevo == NULL)
+    {
+        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
+        exit(1);
+    }
+    nuevo->numCuenta = cliente->numCuenta;
+    strcpy(nuevo->nombre, cliente->nombre);
+    nuevo->monedero = cliente->monedero;
+    nuevo->next = NULL;
+
+    // Caso: Cola vacía
+    if (((*terminal)->primero == NULL) && ((*terminal)->ultimo == NULL))
+    {
+        (*terminal)->primero = nuevo;
+        (*terminal)->ultimo = nuevo;
+    }
+    else // Caso: Cola no vacía
+    {
+        (*terminal)->ultimo->next = nuevo;
+        (*terminal)->ultimo = nuevo;
+    }
+
     return;
 }
 
@@ -394,10 +417,8 @@ extern void atenderCaja(nodoD **caja)
                     // Si la compraValida == -1, solamente se eliminará al cliente de la coa
                     if (compraValida == 1)
                     {
-                        enviarClienteComida(&colaActual, clienteActual);
+                        insertarClienteComida(&colaActual, clienteActual);
                     }
-                    borrarCliente(caja);
-                    borrarCliente(caja);
                 }
                 else
                 {
