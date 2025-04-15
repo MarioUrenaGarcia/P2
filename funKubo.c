@@ -44,6 +44,11 @@ extern void borrarCliente(nodoD **terminal)
         }
 
         free(borra); // Liberar la memoria del cliente eliminado
+
+        // Actualizar el número de clientes y el monto acumulado
+        (*terminal)->clientes--;
+        (*terminal)->montoAcumulado -= borra->monedero;
+
         printf(GREEN "\nCliente eliminado de la cola %s\n" RESET, (*terminal)->terminal);
     }
     return;
@@ -291,11 +296,6 @@ extern void imprimirTerminal(nodoD *aux)
 }
 
 extern void imprimirFacturas(nodoD *aux)
-{
-    return;
-}
-
-extern void atenderTerminal(nodoD **terminal)
 {
     return;
 }

@@ -34,7 +34,6 @@ void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, 
 void imprimirListaD(nodoD *aux);
 int menuOpciones(nodoD *aux, nodoD **seleccion);
 void imprimirTerminal(nodoD *aux);
-void atenderTerminal(nodoD **terminal);
 void presioneEnter();
 void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero);
 void existenTerminalesFundamentales(nodoD *aux);
@@ -186,8 +185,9 @@ int main(int argc, char *argv[])
             }
             else
             {
-                atenderTerminal(&seleccion);
                 printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
+                borrarCliente(&seleccion);
+                printf(GREEN "\n\n\tCliente atendido con éxito\n\n" RESET);
             }
             presioneEnter();
         }
