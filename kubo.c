@@ -41,6 +41,7 @@ void imprimirFacturas(nodoD *aux);
 void atenderFacturas(nodoD **terminal);
 void atenderCaja(nodoD **caja);
 void borrarCliente(nodoD **terminal);
+void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila);
 // Main ---------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
@@ -148,7 +149,6 @@ int main(int argc, char *argv[])
         {
             system("clear");
             // Se imprime la cola de la opción seleccionada
-            printf("\n\n\tImprimiendo cola de %s\n\n", seleccion->terminal);
 
             // Si la terminal es Facturacion, se imprime la pila de facturas de forma diferente
             if (strcmp(seleccion->terminal, "Facturacion") == 0)
@@ -158,7 +158,10 @@ int main(int argc, char *argv[])
             }
             else
             {
+                printf("\n\n\tImprimiendo cola de %s\n\n", seleccion->terminal);
                 imprimirTerminal(seleccion);
+
+                imprimirCola(seleccion->primero, seleccion->ultimo);
             }
             presioneEnter();
         }

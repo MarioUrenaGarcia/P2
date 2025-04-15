@@ -266,32 +266,33 @@ extern void imprimirListaD(nodoD *aux)
 
 extern void imprimirTerminal(nodoD *aux)
 {
-    nodoCola *auxFIFO;
-
-    auxFIFO = aux->primero;
-
     printf(YELLOW "Estado de la cola de %s\n" RESET, aux->terminal);
     printf(GREEN "Número de clientes: %d\n" RESET, aux->clientes);
     printf(GREEN "Monto acumulado: $%.2f\n\n" RESET, aux->montoAcumulado);
 
-    if (auxFIFO == NULL)
+    return;
+}
+
+void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila)
+{
+
+    // Verificar que la cola no esté vacía
+    if (primeroFila == NULL && ultimoFila == NULL)
     {
-        printf(GREEN "La cola está vacía\n" RESET);
-        return;
+        printf(GREEN "\nLa cola está vacía\n" RESET);
     }
     else
     {
-        printf(YELLOW "Clientes en la cola:\n" RESET);
-        while (auxFIFO != NULL)
+        // Imprimir la cola
+        printf(GREEN "Cola de clientes:\n" RESET);
+        do
         {
-            printf(BG_YELLOW BLACK "%d %s %.2f" RESET " -> ", auxFIFO->numCuenta, auxFIFO->nombre, auxFIFO->monedero);
-            auxFIFO = auxFIFO->next;
-        }
-        printf(BG_GREEN "Fin de la cola\n" RESET);
+            printf(BG_YELLOW BLACK "%d %s %.2f" RESET "-> ", primeroFila->numCuenta, primeroFila->nombre, primeroFila->monedero);
+            primeroFila = primeroFila->next;
+        } while (primeroFila != ultimoFila->next);
     }
 
     printf("\n");
-
     return;
 }
 
