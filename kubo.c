@@ -183,7 +183,6 @@ int main(int argc, char *argv[])
             // Si la terminal es cajas, se atiende la cola de la caja de forma diferente
             if (strcmp(seleccion->terminal, "Caja") == 0)
             {
-                printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
                 atenderCaja(&seleccion);
                 borrarCliente(&seleccion);
                 getchar(); // Limpiar el buffer de entrada
@@ -191,14 +190,12 @@ int main(int argc, char *argv[])
             // Si la terminal es Facturacion, se atiende la cola de facturas de forma diferente
             else if (strcmp(seleccion->terminal, "Facturacion") == 0)
             {
-                printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
                 printf("No puedes manipular las facturas pillín, el equipo contable no estará feliz >:)\n\n");
             }
             else
             {
-                printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
                 borrarCliente(&seleccion);
-                printf(GREEN "\n\n\tCliente atendido con éxito\n\n" RESET);
+                printf(GREEN "\n\nCliente atendido con éxito\n\n" RESET);
             }
             presioneEnter();
         }
@@ -223,6 +220,6 @@ int main(int argc, char *argv[])
     printf(GREEN "\n\nLos clientes restantes se han almacenado en \"clientes.txt\"\n\n" RESET);
 
     // FINALIZACIÓN DEL PROGRAMA ---------------------------------------------------------
-    printf("\n\n\tPrograma Finalizado con ÉXITO\n\n");
+    printf("\n\n\tPrograma Finalizado con " GREEN "ÉXITO !!!" RESET "\n\n");
     return 0;
 }

@@ -8,15 +8,83 @@
  */
 
 // Funciones ----------------------------------------------------------------------------
-/**
- * @brief
- * @date
- * @author
- * @param
- * @return
- * @Ejemplo
- */
 
+/**
+ * @brief Función que inserta un cliente en la cola de comida.
+ * @param terminal Puntero a la lista doble que contiene los puestos de comida.
+ * @param cliente Puntero a la cola que contiene los datos del cliente.
+ */
+void insertarClienteComida(nodoD **terminal, nodoCola *cliente)
+{
+    nodoCola *nuevo;
+
+    nuevo = (nodoCola *)malloc(sizeof(nodoCola));
+    if (nuevo == NULL)
+    {
+        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
+        exit(1);
+    }
+    nuevo->numCuenta = cliente->numCuenta;
+    strcpy(nuevo->nombre, cliente->nombre);
+    nuevo->monedero = cliente->monedero;
+    nuevo->next = NULL;
+
+    // Caso: Cola vacía
+    if (((*terminal)->primero == NULL) && ((*terminal)->ultimo == NULL))
+    {
+        (*terminal)->primero = nuevo;
+        (*terminal)->ultimo = nuevo;
+    }
+    else // Caso: Cola no vacía
+    {
+        (*terminal)->ultimo->next = nuevo;
+        (*terminal)->ultimo = nuevo;
+    }
+    // Actualizar el número de clientes y el monto acumulado
+    (*terminal)->clientes++;
+    (*terminal)->montoAcumulado += nuevo->monedero;
+    return;
+}
+
+/**
+ * @brief Función que crea una factura y la inserta en la pila de facturas.
+ * @param facturacion Puntero a la lista doble que contiene la terminal de facturacion.
+ * @param nombreCliente Nombre del cliente.
+ * @param nombreTerminal Nombre de la terminal donde se realizó la compra.
+ * @param total Total de la compra.
+ */
+void crearFactura(nodoD **facturacion, char nombreCliente[], char nombreTerminal[], float total)
+{
+    static int numeroFactura = 1;
+    nodoFactura *nuevo;
+
+    nuevo = (nodoFactura *)malloc(sizeof(nodoFactura));
+    if (nuevo == NULL)
+    {
+        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
+        exit(1);
+    }
+
+    // Crear la factura
+    nuevo->numFactura = numeroFactura;
+    strcpy(nuevo->nombre, nombreCliente);
+    strcpy(nuevo->compra, nombreTerminal);
+    nuevo->totalFacturado = total;
+    nuevo->next = (*facturacion)->top;
+    (*facturacion)->top = nuevo;
+    numeroFactura++;
+
+    // Actualizar el número de clientes y el monto acumulado
+    (*facturacion)->clientes++;
+    (*facturacion)->montoAcumulado += total;
+    return;
+}
+
+/**
+ * @brief Función que crea un archivo de texto con los datos de los clientes en la cola de caja.
+ * @param nombreArchivo Nombre del archivo a crear.
+ * @param aux Puntero a la lista doble que contiene los puestos de comida.
+ */
 extern void crearArchivoClientes(char nombreArchivo[], nodoD *aux)
 {
     FILE *fp;
@@ -55,6 +123,11 @@ extern void crearArchivoClientes(char nombreArchivo[], nodoD *aux)
     return;
 }
 
+/**
+ * @brief Función que verifica si hay clientes en las colas de comida.
+ * @param aux Puntero a la lista doble que contiene los puestos de comida.
+ * @return 1 si hay clientes en las colas de comida, 0 si no hay clientes.
+ */
 extern int verificarColas(nodoD *aux)
 {
     int clientes = 0;
@@ -75,6 +148,11 @@ extern int verificarColas(nodoD *aux)
     return clientes;
 }
 
+/**
+ * @brief Función que crea un archivo de texto con los datos de las facturas.
+ * @param nombreArchivo Nombre del archivo a crear.
+ * @param aux Puntero a la lista doble que contiene los puestos de comida.
+ */
 extern void crearArchivoFacturas(char nombreArchivo[], nodoD *aux)
 {
     FILE *fp;
@@ -111,66 +189,10 @@ extern void crearArchivoFacturas(char nombreArchivo[], nodoD *aux)
     return;
 }
 
-void insertarClienteComida(nodoD **terminal, nodoCola *cliente)
-{
-    nodoCola *nuevo;
-
-    nuevo = (nodoCola *)malloc(sizeof(nodoCola));
-    if (nuevo == NULL)
-    {
-        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
-        exit(1);
-    }
-    nuevo->numCuenta = cliente->numCuenta;
-    strcpy(nuevo->nombre, cliente->nombre);
-    nuevo->monedero = cliente->monedero;
-    nuevo->next = NULL;
-
-    // Caso: Cola vacía
-    if (((*terminal)->primero == NULL) && ((*terminal)->ultimo == NULL))
-    {
-        (*terminal)->primero = nuevo;
-        (*terminal)->ultimo = nuevo;
-    }
-    else // Caso: Cola no vacía
-    {
-        (*terminal)->ultimo->next = nuevo;
-        (*terminal)->ultimo = nuevo;
-    }
-    // Actualizar el número de clientes y el monto acumulado
-    (*terminal)->clientes++;
-    (*terminal)->montoAcumulado += nuevo->monedero;
-    return;
-}
-
-void crearFactura(nodoD **facturacion, char nombreCliente[], char nombreTerminal[], float total)
-{
-    static int numeroFactura = 1;
-    nodoFactura *nuevo;
-
-    nuevo = (nodoFactura *)malloc(sizeof(nodoFactura));
-    if (nuevo == NULL)
-    {
-        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
-        exit(1);
-    }
-
-    // Crear la factura
-    nuevo->numFactura = numeroFactura;
-    strcpy(nuevo->nombre, nombreCliente);
-    strcpy(nuevo->compra, nombreTerminal);
-    nuevo->totalFacturado = total;
-    nuevo->next = (*facturacion)->top;
-    printf("caca\n");
-    (*facturacion)->top = nuevo;
-    numeroFactura++;
-
-    // Actualizar el número de clientes y el monto acumulado
-    (*facturacion)->clientes++;
-    (*facturacion)->montoAcumulado += total;
-    return;
-}
-
+/**
+ * @brief Función que elimina un cliente de la cola.
+ * @param terminal Puntero a la lista doble que contiene los puestos de comida.
+ */
 extern void borrarCliente(nodoD **terminal)
 {
     nodoCola *borra;
@@ -281,6 +303,14 @@ extern int menuOpciones(nodoD *aux, nodoD **seleccion)
     return opcion;
 }
 
+/**
+ * @brief Función que inserta un nodoD en la lista doble.
+ * @param first Puntero a la cabeza de la lista doble.
+ * @param last Puntero a la cola de la lista doble.
+ * @param nombreCola Nombre de la cola a insertar.
+ * @param tickets Número de tickets en la cola.
+ * @param total Monto acumulado en la cola.
+ */
 extern void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int tickets, float total)
 {
     nodoD *nuevo;
@@ -319,6 +349,13 @@ extern void insertarColaD(nodoD **first, nodoD **last, char nombreCola[], int ti
     return;
 }
 
+/**
+ * @brief Función que inserta un cliente en la cola de caja.
+ * @param first Puntero a la cabeza de la lista doble.
+ * @param numCuenta Número de cuenta del cliente.
+ * @param nombreCliente Nombre del cliente.
+ * @param monedero Monto del monedero del cliente.
+ */
 extern void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero)
 {
     nodoCola *nuevo;
@@ -370,6 +407,10 @@ extern void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], flo
     return;
 }
 
+/**
+ * @brief Función que imprime el estado de todas las colas.
+ * @param aux Puntero a la lista doble que contiene los puestos de comida.
+ */
 extern void imprimirListaD(nodoD *aux)
 {
     printf(YELLOW "\nEstado de Cajas\n" RESET);
@@ -393,6 +434,10 @@ extern void imprimirListaD(nodoD *aux)
     return;
 }
 
+/**
+ * @brief Función que imprime el estado de una terminal.
+ * @param aux Puntero a la lista doble que contiene los puestos de comida.
+ */
 extern void imprimirTerminal(nodoD *aux)
 {
     printf(YELLOW "Estado de la cola de %s\n" RESET, aux->terminal);
@@ -402,6 +447,11 @@ extern void imprimirTerminal(nodoD *aux)
     return;
 }
 
+/**
+ * @brief Función que imprime la cola de clientes.
+ * @param primeroFila Puntero al primer nodo de la cola.
+ * @param ultimoFila Puntero al último nodo de la cola.
+ */
 extern void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila)
 {
 
@@ -425,6 +475,10 @@ extern void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila)
     return;
 }
 
+/**
+ * @brief Función que imprime la pila de facturas.
+ * @param aux Puntero a la lista de facturas.
+ */
 extern void imprimirFacturas(nodoFactura *aux)
 {
     // Lista vacía
@@ -444,6 +498,10 @@ extern void imprimirFacturas(nodoFactura *aux)
     return;
 }
 
+/**
+ * @brief Función que atiende la cola de caja.
+ * @param caja Puntero a la lista doble que contiene la terminal de caja.
+ */
 extern void atenderCaja(nodoD **caja)
 {
     int cantidad, compraValida = 0;
@@ -574,6 +632,10 @@ extern void atenderCaja(nodoD **caja)
     return;
 }
 
+/**
+ * @brief Función que verifica si existen las terminales fundamentales (Caja y Facturacion).
+ * @param aux Puntero a la lista doble que contiene los puestos de comida.
+ */
 extern void existenTerminalesFundamentales(nodoD *aux) // Esta función inicia la pila de facturas también
 {
     // Debe de existir la terminal Caja y la terminal Facturacion
@@ -604,6 +666,9 @@ extern void existenTerminalesFundamentales(nodoD *aux) // Esta función inicia l
     return;
 }
 
+/**
+ * @brief Función que espera a que el usuario presione Enter para continuar.
+ */
 extern void presioneEnter()
 {
     printf("\nPresione " BG_GREEN "ENTER" RESET " para continuar\n");
