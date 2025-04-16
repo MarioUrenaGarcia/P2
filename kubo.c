@@ -41,6 +41,9 @@ void imprimirFacturas(nodoFactura *aux);
 void atenderCaja(nodoD **caja);
 void borrarCliente(nodoD **terminal);
 void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila);
+void crearArchivoFacturas(char nombreArchivo[], nodoD *aux);
+int verificarColas(nodoD *aux);
+void crearArchivoClientes(char nombreArchivo[], nodoD *aux);
 // Main ---------------------------------------------------------------------------------
 
 int main(int argc, char *argv[])
@@ -66,6 +69,11 @@ int main(int argc, char *argv[])
     int numCuenta;
     char nombreCliente[20];
     float monedero;
+
+    // Para el nombre del archivo de facturas
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char nombreArchivo[50];
 
     // Inicio Personalizado-----------------------------------------------------------
     printf("\n\n\tEste código fue creado por Mario Ureña García, Ricardo Ponce de León Vargas y Emiliano Cisneros Cervantes\n\n");
@@ -194,8 +202,25 @@ int main(int argc, char *argv[])
             }
             presioneEnter();
         }
+        // Si la opción es 0, se debe verificar que no haya clientes en las colas de comida
+        else if (opcion == 0)
+        {
+            opcion = verificarColas(inicio);
+            presioneEnter();
+        }
 
     } while (opcion != 0); // La opción 0 es para salir del programa
+
+    // Cuando se sale del programa, se almacenan los datos de las facturas en un archivo
+    // Se crea el archivo de facturas, el nombre debe tener la fecha y hora actual
+    sprintf(nombreArchivo, "facturas_%04d-%02d-%02d_%02d-%02d-%02d.txt", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    crearArchivoFacturas(nombreArchivo, inicio);
+    printf(GREEN "\n\nArchivo de facturas creado con éxito\n\n" RESET);
+    printf(GREEN "El archivo de facturas se ha creado con el nombre " YELLOW "%s" RESET, nombreArchivo);
+
+    // Se crea el archivo de clientes restantes
+    crearArchivoClientes("clientes.txt", inicio);
+    printf(GREEN "\n\nLos clientes restantes se han almacenado en \"clientes.txt\"\n\n" RESET);
 
     // FINALIZACIÓN DEL PROGRAMA ---------------------------------------------------------
     printf("\n\n\tPrograma Finalizado con ÉXITO\n\n");

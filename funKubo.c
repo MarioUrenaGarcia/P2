@@ -16,6 +16,101 @@
  * @return
  * @Ejemplo
  */
+
+extern void crearArchivoClientes(char nombreArchivo[], nodoD *aux)
+{
+    FILE *fp;
+    nodoCola *clientesInicio, *clientesFin;
+
+    // Buscar la terminal de caja
+    while (aux != NULL && (strcmp(aux->terminal, "Caja") != 0))
+    {
+        aux = aux->next;
+    }
+    // Cuando se encuentra la terminal de caja, se asigna a clientes
+    clientesInicio = aux->primero;
+    clientesFin = aux->ultimo;
+    // Crear el archivo de clientes
+    fp = fopen(nombreArchivo, "w");
+    if (fp == NULL)
+    {
+        printf(RED "\nERROR: No se pudo crear el archivo de clientes\n" RESET);
+        exit(1);
+    }
+    // Imprimir la lista de clientes
+    // Verificar que la cola no esté vacía
+    if (clientesInicio == NULL && clientesFin == NULL)
+    {
+        fprintf(fp, "0\n");
+    }
+    else
+    {
+        do
+        {
+            fprintf(fp, "%d\t%s\t%.2f\n", clientesInicio->numCuenta, clientesInicio->nombre, clientesInicio->monedero);
+            clientesInicio = clientesInicio->next;
+        } while (clientesInicio != clientesFin->next);
+    }
+
+    return;
+}
+
+extern int verificarColas(nodoD *aux)
+{
+    int clientes = 0;
+    // Verificar que no haya clientes en las colas de comida
+    while (aux != NULL)
+    {
+        if (strcmp(aux->terminal, "Caja") != 0 && strcmp(aux->terminal, "Facturacion") != 0)
+        {
+            if (aux->primero != NULL)
+            {
+                printf(RED "\n\n\tError: Aún hay clientes en la cola de %s, no puedes cerrar el programa!\n\n" RESET, aux->terminal);
+                clientes = 1;
+            }
+        }
+        aux = aux->next;
+    }
+
+    return clientes;
+}
+
+extern void crearArchivoFacturas(char nombreArchivo[], nodoD *aux)
+{
+    FILE *fp;
+    nodoFactura *facturas = NULL;
+
+    fp = fopen(nombreArchivo, "w");
+    if (fp == NULL)
+    {
+        printf(RED "\nERROR: No se pudo crear el archivo de facturas\n" RESET);
+        exit(1);
+    }
+    // Buscar la terminal de facturacion
+    while (aux != NULL && (strcmp(aux->terminal, "Facturacion") != 0))
+    {
+        aux = aux->next;
+    }
+
+    // Imprimir la pila de facturas
+    facturas = aux->top;
+
+    // Si no hay facturas, se almacena como 0
+    if (facturas == NULL)
+    {
+        fprintf(fp, "0\n");
+    }
+    // Imprimir la lista de facturas
+    while (facturas != NULL)
+    {
+        fprintf(fp, "%d\t%s\t%s\t%.2f\n", facturas->numFactura, facturas->nombre, facturas->compra, facturas->totalFacturado);
+        facturas = facturas->next;
+    }
+    fclose(fp);
+
+    return;
+}
+
 void insertarClienteComida(nodoD **terminal, nodoCola *cliente)
 {
     nodoCola *nuevo;
@@ -143,7 +238,15 @@ extern int menuOpciones(nodoD *aux, nodoD **seleccion)
         {
             printf(CYAN "%d." RESET " Imprimir cola de %s\n", i, aux->terminal);
             i++;
-            printf(YELLOW "%d." RESET " Atender cola de %s\n", i, aux->terminal);
+            // Si no es la cola de facturas
+            if (strcmp(aux->terminal, "Facturacion") != 0)
+            {
+                printf(YELLOW "%d." RESET " Atender cola de %s\n", i, aux->terminal);
+            }
+            else
+            {
+                printf(RED "%d." RESET " Manipular la %s\n", i, aux->terminal);
+            }
             i++;
             aux = aux->next;
         }
