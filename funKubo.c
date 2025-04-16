@@ -8,7 +8,6 @@
  */
 
 // Funciones ----------------------------------------------------------------------------
-extern void imprimirTerminal(nodoD *aux);
 /**
  * @brief
  * @date
@@ -17,6 +16,65 @@ extern void imprimirTerminal(nodoD *aux);
  * @return
  * @Ejemplo
  */
+void insertarClienteComida(nodoD **terminal, nodoCola *cliente)
+{
+    nodoCola *nuevo;
+
+    nuevo = (nodoCola *)malloc(sizeof(nodoCola));
+    if (nuevo == NULL)
+    {
+        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
+        exit(1);
+    }
+    nuevo->numCuenta = cliente->numCuenta;
+    strcpy(nuevo->nombre, cliente->nombre);
+    nuevo->monedero = cliente->monedero;
+    nuevo->next = NULL;
+
+    // Caso: Cola vacía
+    if (((*terminal)->primero == NULL) && ((*terminal)->ultimo == NULL))
+    {
+        (*terminal)->primero = nuevo;
+        (*terminal)->ultimo = nuevo;
+    }
+    else // Caso: Cola no vacía
+    {
+        (*terminal)->ultimo->next = nuevo;
+        (*terminal)->ultimo = nuevo;
+    }
+    // Actualizar el número de clientes y el monto acumulado
+    (*terminal)->clientes++;
+    (*terminal)->montoAcumulado += nuevo->monedero;
+    return;
+}
+
+void crearFactura(nodoD **facturacion, char nombreCliente[], char nombreTerminal[], float total)
+{
+    static int numeroFactura = 1;
+    nodoFactura *nuevo;
+
+    nuevo = (nodoFactura *)malloc(sizeof(nodoFactura));
+    if (nuevo == NULL)
+    {
+        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
+        exit(1);
+    }
+
+    // Crear la factura
+    nuevo->numFactura = numeroFactura;
+    strcpy(nuevo->nombre, nombreCliente);
+    strcpy(nuevo->compra, nombreTerminal);
+    nuevo->totalFacturado = total;
+    nuevo->next = (*facturacion)->top;
+    printf("caca\n");
+    (*facturacion)->top = nuevo;
+    numeroFactura++;
+
+    // Actualizar el número de clientes y el monto acumulado
+    (*facturacion)->clientes++;
+    (*facturacion)->montoAcumulado += total;
+    return;
+}
 
 extern void borrarCliente(nodoD **terminal)
 {
@@ -51,38 +109,6 @@ extern void borrarCliente(nodoD **terminal)
 
         printf(GREEN "\nCliente eliminado de la cola %s\n" RESET, (*terminal)->terminal);
     }
-    return;
-}
-
-void insertarClienteComida(nodoD **terminal, nodoCola *cliente)
-{
-    nodoCola *nuevo;
-
-    nuevo = (nodoCola *)malloc(sizeof(nodoCola));
-    if (nuevo == NULL)
-    {
-        printf(RED "\nERROR: No hay memoria disponible\n" RESET);
-        exit(1);
-    }
-    nuevo->numCuenta = cliente->numCuenta;
-    strcpy(nuevo->nombre, cliente->nombre);
-    nuevo->monedero = cliente->monedero;
-    nuevo->next = NULL;
-
-    // Caso: Cola vacía
-    if (((*terminal)->primero == NULL) && ((*terminal)->ultimo == NULL))
-    {
-        (*terminal)->primero = nuevo;
-        (*terminal)->ultimo = nuevo;
-    }
-    else // Caso: Cola no vacía
-    {
-        (*terminal)->ultimo->next = nuevo;
-        (*terminal)->ultimo = nuevo;
-    }
-    // Actualizar el número de clientes y el monto acumulado
-    (*terminal)->clientes++;
-    (*terminal)->montoAcumulado += nuevo->monedero;
     return;
 }
 
@@ -273,7 +299,7 @@ extern void imprimirTerminal(nodoD *aux)
     return;
 }
 
-void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila)
+extern void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila)
 {
 
     // Verificar que la cola no esté vacía
@@ -296,8 +322,22 @@ void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila)
     return;
 }
 
-extern void imprimirFacturas(nodoD *aux)
+extern void imprimirFacturas(nodoFactura *aux)
 {
+    // Lista vacía
+    if (aux == NULL)
+    {
+        printf(RED "\nLa lista de facturas está vacía\n" RESET);
+        return;
+    }
+    // Imprimir la lista de facturas
+    while (aux != NULL)
+    {
+        printf(BG_YELLOW BLACK "[ %d %s %s %.2f ]" RESET "\n", aux->numFactura, aux->nombre, aux->compra, aux->totalFacturado);
+        aux = aux->next;
+    }
+    printf("\n");
+
     return;
 }
 
@@ -306,6 +346,7 @@ extern void atenderCaja(nodoD **caja)
     int cantidad, compraValida = 0;
     float pagar;
     nodoD *colaActual;
+    nodoD *nodoFacturacion; // Para ubicar la terminal de facturacion
     nodoCola *clienteActual;
     // Verificar que la cola no esté vacía
     if (((*caja)->primero == NULL) && ((*caja)->ultimo == NULL))
@@ -324,7 +365,6 @@ extern void atenderCaja(nodoD **caja)
         // Solamente puede comprar un producto por vez.
         do
         {
-
             // Si la terminal no es Caja, ni Facturacion, se hace todo
             if ((strcmp(colaActual->terminal, "Caja") != 0) && (strcmp(colaActual->terminal, "Facturacion") != 0))
             {
@@ -400,6 +440,16 @@ extern void atenderCaja(nodoD **caja)
                     if (compraValida == 1)
                     {
                         insertarClienteComida(&colaActual, clienteActual);
+
+                        // Buscar la terminal de facturacion
+                        nodoFacturacion = *caja;
+                        while (nodoFacturacion != NULL && (strcmp(nodoFacturacion->terminal, "Facturacion") != 0))
+                        {
+                            nodoFacturacion = nodoFacturacion->next;
+                        }
+
+                        printf("Nodo de %s ", nodoFacturacion->terminal);
+                        crearFactura(&nodoFacturacion, clienteActual->nombre, colaActual->terminal, pagar);
                     }
                     // Actualizar valores de terminal
                     (*caja)->clientes--;
@@ -426,7 +476,7 @@ extern void atenderFacturas(nodoD **terminal)
     return;
 }
 
-extern void existenTerminalesFundamentales(nodoD *aux)
+extern void existenTerminalesFundamentales(nodoD *aux) // Esta función inicia la pila de facturas también
 {
     // Debe de existir la terminal Caja y la terminal Facturacion
     int caja = 0, facturacion = 0;
@@ -439,6 +489,7 @@ extern void existenTerminalesFundamentales(nodoD *aux)
         if (strcmp(aux->terminal, "Facturacion") == 0)
         {
             facturacion = 1;
+            aux->top = NULL; // Inicializar la pila de facturas
         }
         aux = aux->next;
     }

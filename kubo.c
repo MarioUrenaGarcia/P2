@@ -37,7 +37,7 @@ void imprimirTerminal(nodoD *aux);
 void presioneEnter();
 void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero);
 void existenTerminalesFundamentales(nodoD *aux);
-void imprimirFacturas(nodoD *aux);
+void imprimirFacturas(nodoFactura *aux);
 void atenderFacturas(nodoD **terminal);
 void atenderCaja(nodoD **caja);
 void borrarCliente(nodoD **terminal);
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     printf(YELLOW "Verificando que existan las terminales fundamentales\n\n" RESET);
     existenTerminalesFundamentales(inicio);
     printf(GREEN "Terminales fundamentales verificadas con éxito\n" RESET);
+    printf(GREEN "Pila de facturas inicializada con éxito\n" RESET);
     presioneEnter();
 
     // Carga de datos desde el archivo de clientes a la terminal de la caja
@@ -154,7 +155,7 @@ int main(int argc, char *argv[])
             if (strcmp(seleccion->terminal, "Facturacion") == 0)
             {
                 printf("\n\n\tImprimiendo pila de facturas\n\n");
-                imprimirFacturas(seleccion);
+                imprimirFacturas(seleccion->top);
             }
             else
             {
