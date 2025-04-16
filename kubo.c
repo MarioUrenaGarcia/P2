@@ -38,7 +38,6 @@ void presioneEnter();
 void insertarCaja(nodoD **first, int numCuenta, char nombreCliente[], float monedero);
 void existenTerminalesFundamentales(nodoD *aux);
 void imprimirFacturas(nodoFactura *aux);
-void atenderFacturas(nodoD **terminal);
 void atenderCaja(nodoD **caja);
 void borrarCliente(nodoD **terminal);
 void imprimirCola(nodoCola *primeroFila, nodoCola *ultimoFila);
@@ -185,7 +184,7 @@ int main(int argc, char *argv[])
             else if (strcmp(seleccion->terminal, "Facturacion") == 0)
             {
                 printf("\n\n\tAtendiendo cola de %s\n\n", seleccion->terminal);
-                atenderFacturas(&seleccion);
+                printf("No puedes manipular las facturas pillín, el equipo contable no estará feliz >:)\n\n");
             }
             else
             {

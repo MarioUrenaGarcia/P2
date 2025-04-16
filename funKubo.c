@@ -471,11 +471,6 @@ extern void atenderCaja(nodoD **caja)
     return;
 }
 
-extern void atenderFacturas(nodoD **terminal)
-{
-    return;
-}
-
 extern void existenTerminalesFundamentales(nodoD *aux) // Esta función inicia la pila de facturas también
 {
     // Debe de existir la terminal Caja y la terminal Facturacion
